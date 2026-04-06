@@ -5,6 +5,12 @@ const AppLayout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
 
+  const titleMap = {
+    '/dashboard': 'Dashboard Overview',
+    '/records': 'Financial Records',
+    '/users': 'User & Access Management'
+  };
+
   const links = [
     { to: '/dashboard', label: 'Dashboard', roles: ['viewer', 'analyst', 'admin'] },
     { to: '/records', label: 'Records', roles: ['analyst', 'admin'] },
@@ -15,6 +21,7 @@ const AppLayout = () => {
     <div className="layout">
       <aside className="sidebar">
         <h2>FinanceOps</h2>
+        <p className="small">Data Processing Console</p>
         <p className="small">
           {user?.name} ({user?.role})
         </p>
@@ -37,6 +44,13 @@ const AppLayout = () => {
       </aside>
 
       <main className="content">
+        <header className="page-header card">
+          <div>
+            <p className="eyebrow">Finance Dashboard</p>
+            <h1>{titleMap[location.pathname] || 'Workspace'}</h1>
+          </div>
+          <div className="badge">Status: {user?.status}</div>
+        </header>
         <Outlet />
       </main>
     </div>

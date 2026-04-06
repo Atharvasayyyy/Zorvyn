@@ -15,19 +15,35 @@ const RecordsPage = () => {
   const [records, setRecords] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    type: '',
+    category: ''
+  });
 
   const loadRecords = async () => {
+    setLoading(true);
     try {
-      const { data } = await api.get('/records?limit=20');
+      const query = new URLSearchParams({
+        limit: '20',
+        ...(filters.type ? { type: filters.type } : {}),
+        ...(filters.category ? { category: filters.category } : {})
+      }).toString();
+
+      const { data } = await api.get(`/records?${query}`);
       setRecords(data.data);
+      setMessage('');
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load records');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     loadRecords();
-  }, []);
+  }, [filters.type, filters.category]);
 
   const createRecord = async (event) => {
     event.preventDefault();
@@ -40,6 +56,7 @@ const RecordsPage = () => {
         date: new Date(form.date).toISOString()
       });
       setForm(initialForm);
+      setMessage('Record created successfully.');
       await loadRecords();
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to create record');
@@ -51,6 +68,7 @@ const RecordsPage = () => {
 
     try {
       await api.delete(`/records/${id}`);
+      setMessage('Record deleted successfully.');
       await loadRecords();
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to delete record');
@@ -59,8 +77,37 @@ const RecordsPage = () => {
 
   return (
     <section>
-      <h1>Financial Records</h1>
+      <div className="row between">
+        <h2>Financial Records</h2>
+        <button className="btn secondary" type="button" onClick={loadRecords}>
+          Refresh
+        </button>
+      </div>
       {error ? <p className="error">{error}</p> : null}
+      {message ? <p className="success">{message}</p> : null}
+
+      <div className="card filter-row">
+        <select
+          value={filters.type}
+          onChange={(e) => setFilters((prev) => ({ ...prev, type: e.target.value }))}
+        >
+          <option value="">All Types</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+        <input
+          placeholder="Filter by category"
+          value={filters.category}
+          onChange={(e) => setFilters((prev) => ({ ...prev, category: e.target.value }))}
+        />
+        <button
+          className="btn light"
+          type="button"
+          onClick={() => setFilters({ type: '', category: '' })}
+        >
+          Clear Filters
+        </button>
+      </div>
 
       {user?.role === 'admin' ? (
         <form className="card form-grid" onSubmit={createRecord}>
@@ -106,6 +153,9 @@ const RecordsPage = () => {
 
       <div className="card">
         <h3>Latest Records</h3>
+        {loading ? <p className="muted">Loading records...</p> : null}
+        {!loading && !records.length ? <p className="muted">No records found for selected filters.</p> : null}
+        <div className="table-wrap">
         <table>
           <thead>
             <tr>
@@ -136,6 +186,7 @@ const RecordsPage = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </section>
   );

@@ -45,6 +45,31 @@ A full MERN stack project built for the assignment requirements, with focus on b
 
 ## Implemented Requirements
 
+### Requirement Compliance Checklist
+
+- Core Requirement 1 (User and Role Management): Implemented
+- Core Requirement 2 (Financial Records Management): Implemented
+- Core Requirement 3 (Dashboard Summary APIs): Implemented
+- Core Requirement 4 (Access Control Logic): Implemented
+- Core Requirement 5 (Validation and Error Handling): Implemented
+- Core Requirement 6 (Data Persistence): Implemented
+
+### Role Permission Matrix
+
+- Viewer
+  - Can access dashboard summary
+  - Cannot view/create/update/delete records
+  - Cannot manage users
+- Analyst
+  - Can access dashboard summary
+  - Can view records with filters and pagination
+  - Cannot create/update/delete records
+  - Cannot manage users
+- Admin
+  - Can access dashboard summary
+  - Can create/view/update/delete records
+  - Can create/list/update users
+
 ### 1. User and Role Management
 
 - Admin-only user management APIs.
@@ -182,4 +207,11 @@ Frontend runs at: `http://localhost:5173`
 - Unit and integration tests
 - Swagger/OpenAPI docs
 - Export reports (CSV/PDF)
-# Zorvyn
+
+## Included Enhancements in This Submission
+
+- JWT authentication (`/api/auth/login`, `/api/auth/me`)
+- Pagination and filtering in record listing
+- Search-like category filtering for records
+- Soft delete for records (`isDeleted`)
+- Improved frontend UX for dashboard, records, and users

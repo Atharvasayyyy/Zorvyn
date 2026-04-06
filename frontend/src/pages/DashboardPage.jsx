@@ -51,34 +51,60 @@ const DashboardPage = () => {
           <div className="grid2">
             <article className="card">
               <h3>Category Totals</h3>
-              <ul className="list">
-                {summary.categoryTotals.slice(0, 10).map((item, index) => (
-                  <li key={`${item.category}-${item.type}-${index}`}>
-                    <span>
-                      {item.category} ({item.type})
-                    </span>
-                    <strong>${item.total.toFixed(2)}</strong>
-                  </li>
-                ))}
-              </ul>
+              {summary.categoryTotals.length ? (
+                <ul className="list">
+                  {summary.categoryTotals.slice(0, 10).map((item, index) => (
+                    <li key={`${item.category}-${item.type}-${index}`}>
+                      <span>
+                        {item.category} ({item.type})
+                      </span>
+                      <strong>${item.total.toFixed(2)}</strong>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="muted">No category insights available for this range.</p>
+              )}
             </article>
 
             <article className="card">
               <h3>Recent Activity</h3>
+              {summary.recentActivity.length ? (
+                <ul className="list">
+                  {summary.recentActivity.map((item) => (
+                    <li key={item._id}>
+                      <span>
+                        {new Date(item.date).toLocaleDateString()} - {item.category}
+                      </span>
+                      <strong>
+                        {item.type === 'income' ? '+' : '-'}${item.amount.toFixed(2)}
+                      </strong>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="muted">No recent transactions found.</p>
+              )}
+            </article>
+          </div>
+
+          <article className="card">
+            <h3>Trend Timeline</h3>
+            {summary.trends.length ? (
               <ul className="list">
-                {summary.recentActivity.map((item) => (
-                  <li key={item._id}>
+                {summary.trends.slice(-8).map((trend, index) => (
+                  <li key={`${trend.period}-${trend.type}-${index}`}>
                     <span>
-                      {new Date(item.date).toLocaleDateString()} - {item.category}
+                      {trend.period} ({trend.type})
                     </span>
-                    <strong>
-                      {item.type === 'income' ? '+' : '-'}${item.amount.toFixed(2)}
-                    </strong>
+                    <strong>${trend.total.toFixed(2)}</strong>
                   </li>
                 ))}
               </ul>
-            </article>
-          </div>
+            ) : (
+              <p className="muted">No trend data to display for this range.</p>
+            )}
+          </article>
         </>
       ) : (
         <p>Loading summary...</p>
